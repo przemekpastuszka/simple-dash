@@ -99,3 +99,4 @@ class DashInput(DataProvider):
 
     def depends_on(self) -> Set[Input]:
         return {self._dash_input}
+

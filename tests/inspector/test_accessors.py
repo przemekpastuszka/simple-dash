@@ -19,6 +19,15 @@ def test_nested_accessor():
     assert accessor.set(("a", ("x", "y", "z")), "Z") == ("a", ("x", "y", "Z"))
 
 
+def test_nested_accessor_with_dummy():
+    for accessor in [
+        NestedAccessor(DummyAccessor(), TupleAccessor(0)),
+        NestedAccessor(TupleAccessor(0), DummyAccessor())
+    ]:
+        assert accessor.get(("a", ("x", "y"))) == "a"
+        assert accessor.set(("a", ("x", "y")), "A") == ("A", ("x", "y"))
+
+
 def test_dummy_accessor():
     accessor = DummyAccessor()
     assert accessor.set("a", "b") == "b"

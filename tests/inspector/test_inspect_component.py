@@ -1,7 +1,6 @@
 import dash_core_components as dcc
 from dash.dependencies import Input
 
-from simpledash.inspector.accessors import NestedAccessor, Accessor
 from simpledash.inspector.component import find_data_providers_used_in_component
 
 input_a = Input("a", "x")
@@ -18,14 +17,12 @@ dummy_component = dcc.Graph(figure=dict(
     }]
 ))
 
+
 def test_retrieves_data_providers_and_their_accessors():
     providers_with_accessors = find_data_providers_used_in_component(dummy_component)
     assert providers_with_accessors.keys() == {'figure'}
 
-    providers_with_accessors
-
-
-def _linearize_accessors(accessor: Accessor):
-    if isinstance(accessor, NestedAccessor):
-        return _linearize_accessors(accessor.a) + _linearize_accessors(accessor.b)
-    return [accessor]
+    providers_with_accessors = [(x.data_provider._dash_input, repr(x.accessor)) for x in providers_with_accessors['figure']]
+    assert (input_a, "[series][0][x]") in providers_with_accessors
+    assert (input_b, "[series][0][y]") in providers_with_accessors
+    assert (input_c, "[series][0][marker](1)[color]") in providers_with_accessors

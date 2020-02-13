@@ -27,6 +27,9 @@ class TupleAccessor(KeyAccessor):
         obj[self.index] = value
         return tuple(obj)
 
+    def __repr__(self):
+        return "({})".format(self.index)
+
 
 class DummyAccessor(Accessor):
     def get(self, obj):
@@ -34,6 +37,9 @@ class DummyAccessor(Accessor):
 
     def set(self, obj, value):
         return value
+
+    def __repr__(self):
+        return ""
 
 
 class NestedAccessor(Accessor):
@@ -48,3 +54,6 @@ class NestedAccessor(Accessor):
         inner = self.a.get(obj)
         new_inner = self.b.set(inner, value)
         return self.a.set(obj, new_inner)
+
+    def __repr__(self):
+        return "{}{}".format(repr(self.a), repr(self.b))
