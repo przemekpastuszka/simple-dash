@@ -1,5 +1,4 @@
-from simpledash.inspector.accessors import TupleAccessor, NestedAccessor
-from simpledash.inspector.component import KeyAccessor
+from simpledash.inspector.accessors import TupleAccessor, NestedAccessor, KeyAccessor, DummyAccessor
 
 
 def test_key_accessor():
@@ -18,3 +17,8 @@ def test_nested_accessor():
     accessor = NestedAccessor(TupleAccessor(1), TupleAccessor(2))
     assert accessor.get(("a", ("x", "y", "z"))) == "z"
     assert accessor.set(("a", ("x", "y", "z")), "Z") == ("a", ("x", "y", "Z"))
+
+
+def test_dummy_accessor():
+    accessor = DummyAccessor()
+    assert accessor.set("a", "b") == "b"

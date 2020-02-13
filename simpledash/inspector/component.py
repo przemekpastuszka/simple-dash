@@ -1,50 +1,46 @@
 from collections import defaultdict
-from typing import List
+from typing import Dict, List
 
 from dash.dependencies import Input
 from dash.development.base_component import Component
 
 from simpledash.data.data_provider import DataProvider
-from simpledash.inspector.accessors import Accessor, KeyAccessor, TupleAccessor
+from simpledash.inspector.accessors import Accessor, KeyAccessor, TupleAccessor, DummyAccessor, NestedAccessor
 
 
-class ProxyAccessors:
-    def __init__(self, proxy: DataProvider):
-        self.proxy = proxy
-        self.accessors = DummyAccessor()
+class DataProviderWithAccessor:
+    def __init__(self, data_provider: DataProvider, accessor: Accessor):
+        self.data_provider = data_provider
+        self.accessor = accessor
 
-    def prepend(self, accessor: Accessor) -> 'ProxyAccessors':
-        self.accessors.prepend(accessor)
-        return self
 
-    def __repr__(self):
-        return "{} = {}".format(self.accessors, self.proxy)
+def find_data_providers(obj, root_accessor: Accessor = None) -> List[DataProviderWithAccessor]:
+    root_accessor = root_accessor or DummyAccessor()
 
-def find_proxies_used_in(obj) -> List[ProxyAccessors]:
-    def proxies_in(iterator, accessor_clazz):
+    def data_providers_in(iterator, accessor_clazz):
         data = []
         for k, v in iterator:
-            data += [proxy.prepend(accessor_clazz(k)) for proxy in find_proxies_used_in(v)]
+            data += find_data_providers(v, NestedAccessor(root_accessor, accessor_clazz(k)))
         return data
 
     if isinstance(obj, (DataProvider, Input)):
-        return [ProxyAccessors(DataProvider.to_provider(obj))]
+        return [DataProviderWithAccessor(DataProvider.to_provider(obj), root_accessor)]
 
     if isinstance(obj, dict):
-        return proxies_in(obj.items(), KeyAccessor)
+        return data_providers_in(obj.items(), KeyAccessor)
 
     if isinstance(obj, list):
-        return proxies_in(enumerate(obj), KeyAccessor)
+        return data_providers_in(enumerate(obj), KeyAccessor)
 
     if isinstance(obj, tuple):
-        return proxies_in(enumerate(obj), TupleAccessor)
+        return data_providers_in(enumerate(obj), TupleAccessor)
 
     return []
 
 
-def find_proxies_used_in_component(component: Component):
+def find_data_providers_used_in_component(component: Component) -> Dict[str, List[DataProviderWithAccessor]]:
     proxies = defaultdict(list)
     for attr, attr_value in component.__dict__.items():
-        for proxy in find_proxies_used_in(attr_value):
+        for proxy in find_data_providers(attr_value):
             proxies[attr].append(proxy)
     return proxies

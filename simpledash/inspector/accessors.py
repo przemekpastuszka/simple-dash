@@ -28,6 +28,14 @@ class TupleAccessor(KeyAccessor):
         return tuple(obj)
 
 
+class DummyAccessor(Accessor):
+    def get(self, obj):
+        return obj
+
+    def set(self, obj, value):
+        return value
+
+
 class NestedAccessor(Accessor):
     def __init__(self, a: Accessor, b: Accessor):
         self.a = a
