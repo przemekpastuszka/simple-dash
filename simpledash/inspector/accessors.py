@@ -6,6 +6,18 @@ class Accessor:
         raise NotImplementedError
 
 
+class PropertyAccessor(Accessor):
+    def __init__(self, property_name):
+        self.property_name = property_name
+
+    def get(self, obj):
+        return getattr(obj, self.property_name)
+
+    def set(self, obj, value):
+        setattr(obj, self.property_name, value)
+        return obj
+
+
 class KeyAccessor(Accessor):
     def __init__(self, index):
         self.index = index

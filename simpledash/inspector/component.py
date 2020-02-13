@@ -14,13 +14,21 @@ class DataProviderWithAccessor:
         self.accessor = accessor
 
 
-def find_data_providers(obj, root_accessor: Accessor = None) -> List[DataProviderWithAccessor]:
+def find_data_providers(component: Component) -> Dict[str, List[DataProviderWithAccessor]]:
+    proxies = defaultdict(list)
+    for attr, attr_value in component.__dict__.items():
+        for proxy in _find_data_providers(attr_value):
+            proxies[attr].append(proxy)
+    return proxies
+
+
+def _find_data_providers(obj, root_accessor: Accessor = None) -> List[DataProviderWithAccessor]:
     root_accessor = root_accessor or DummyAccessor()
 
     def data_providers_in(iterator, accessor_clazz):
         data = []
         for k, v in iterator:
-            data += find_data_providers(v, NestedAccessor(root_accessor, accessor_clazz(k)))
+            data += _find_data_providers(v, NestedAccessor(root_accessor, accessor_clazz(k)))
         return data
 
     if isinstance(obj, (DataProvider, Input)):
@@ -36,11 +44,3 @@ def find_data_providers(obj, root_accessor: Accessor = None) -> List[DataProvide
         return data_providers_in(enumerate(obj), TupleAccessor)
 
     return []
-
-
-def find_data_providers_used_in_component(component: Component) -> Dict[str, List[DataProviderWithAccessor]]:
-    proxies = defaultdict(list)
-    for attr, attr_value in component.__dict__.items():
-        for proxy in find_data_providers(attr_value):
-            proxies[attr].append(proxy)
-    return proxies

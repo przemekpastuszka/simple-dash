@@ -1,7 +1,7 @@
 import dash_core_components as dcc
 from dash.dependencies import Input
 
-from simpledash.inspector.component import find_data_providers_used_in_component
+from simpledash.inspector.component import find_data_providers
 
 input_a = Input("a", "x")
 input_b = Input("b", "x")
@@ -19,7 +19,7 @@ dummy_component = dcc.Graph(figure=dict(
 
 
 def test_retrieves_data_providers_and_their_accessors():
-    providers_with_accessors = find_data_providers_used_in_component(dummy_component)
+    providers_with_accessors = find_data_providers(dummy_component)
     assert providers_with_accessors.keys() == {'figure'}
 
     providers_with_accessors = [(x.data_provider._dash_input, repr(x.accessor)) for x in providers_with_accessors['figure']]
