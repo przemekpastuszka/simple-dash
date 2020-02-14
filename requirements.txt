@@ -1,2 +1,1 @@
-dash
-pytest
+dash>=1.6.0

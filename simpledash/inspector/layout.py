@@ -1,9 +1,7 @@
-from typing import Generator
-
 from dash.development.base_component import Component
 
 
-def find_all_components(component: Component) -> Generator[Component]:
+def find_all_components(component: Component):
     children = getattr(component, 'children', [])
     children = children if isinstance(children, list) else [children]
     for child in children:
