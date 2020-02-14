@@ -7,7 +7,7 @@ class Accessor:
 
 
 class PropertyAccessor(Accessor):
-    def __init__(self, property_name):
+    def __init__(self, property_name: str):
         self.property_name = property_name
 
     def get(self, obj):
@@ -17,9 +17,12 @@ class PropertyAccessor(Accessor):
         setattr(obj, self.property_name, value)
         return obj
 
+    def __repr__(self):
+        return ".{}".format(self.property_name)
+
 
 class KeyAccessor(Accessor):
-    def __init__(self, index):
+    def __init__(self, index: int):
         self.index = index
 
     def get(self, obj):

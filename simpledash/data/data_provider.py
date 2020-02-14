@@ -1,5 +1,5 @@
 import operator
-from typing import Set, Dict, Any
+from typing import Set, Dict, Any, Union
 
 from dash.dependencies import Input
 
@@ -21,7 +21,7 @@ class DataProvider:
     def __getitem__(self, item) -> 'DataProvider':
         return Operation(operator.getitem, self, item)
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> 'DataProvider':
         return Operation(lambda obj, *a, **kw: obj(*a, **kw), self, *args, **kwargs)
 
     def __bool__(self):
@@ -52,7 +52,7 @@ class StaticValueProvider(DataProvider):
     def depends_on(self) -> Set[Input]:
         return set()
 
-    def evaluate(self, context):
+    def evaluate(self, context: Dict[Input, Any]):
         return self.value
 
 
@@ -69,13 +69,13 @@ class Operation(DataProvider):
     def depends_on(self) -> Set[Input]:
         return self._depends_on
 
-    def evaluate(self, context):
+    def evaluate(self, context: Dict[Input, Any]):
         args = tuple(arg.evaluate(context) for arg in self._args)
         kwargs = {k: arg.evaluate(context) for k, arg in self._kwargs.items()}
         return self._op(*args, **kwargs)
 
 
-def data_provider(*args, **kwargs):
+def data_provider(*args: Union[Input, DataProvider], **kwargs: Union[Input, DataProvider]):
     def wrap(f):
         return MethodProxy(f, *args, **kwargs)
 
