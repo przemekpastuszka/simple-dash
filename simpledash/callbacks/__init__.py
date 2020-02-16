@@ -21,9 +21,11 @@ def _replace_data_providers_with_nones(component: Component, component_property:
     for data_provider in data_providers:
         accessor = NestedAccessor(PropertyAccessor(component_property), data_provider.accessor)
         accessor.set(component, None)
+    return component
 
 
-def _setup_callback(app: Dash, component: Component,
+def _setup_callback(app: Dash,
+                    component: Component,
                     component_property: str,
                     data_providers: List[DataProviderWithAccessor]):
     inputs = _get_all_inputs(data_providers)
@@ -47,5 +49,5 @@ def _get_all_inputs(data_providers):
     inputs = set()
     for data_provider in data_providers:
         inputs |= data_provider.data_provider.depends_on()
-    inputs = list(inputs)
+    inputs = list(sorted(inputs, key=lambda inp: (inp.component_id, inp.component_property)))
     return inputs

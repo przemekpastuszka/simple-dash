@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Accessor:
     def get(self, obj):
         raise NotImplementedError
@@ -22,7 +25,7 @@ class PropertyAccessor(Accessor):
 
 
 class KeyAccessor(Accessor):
-    def __init__(self, index: int):
+    def __init__(self, index):
         self.index = index
 
     def get(self, obj):
@@ -69,6 +72,12 @@ class NestedAccessor(Accessor):
         inner = self.a.get(obj)
         new_inner = self.b.set(inner, value)
         return self.a.set(obj, new_inner)
+
+    @classmethod
+    def from_list(cls, ls: List[Accessor]) -> Accessor:
+        if len(ls) == 1:
+            return ls[0]
+        return NestedAccessor(ls[0], cls.from_list(ls[1:]))
 
     def __repr__(self):
         return "{}{}".format(repr(self.a), repr(self.b))
