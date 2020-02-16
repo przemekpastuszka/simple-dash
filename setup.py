@@ -21,7 +21,7 @@ setup(
     long_description=io.open("README.md", encoding="utf-8").read(),
     long_description_content_type="text/markdown",
     python_requires=">=3.5",
-    packages=find_packages(exclude=["tests*"]),
+    packages=find_packages(exclude=["tests*", "examples*"]),
     install_requires=read_lines("requirements.txt"),
     classifiers=[
         "Programming Language :: Python",
