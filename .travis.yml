@@ -2,20 +2,13 @@ language: python
 install:
   - pip install -r requirements.dev.txt
   - pip install 'dash[testing]'
-os: linux
 addons:
-  apt:
-    update: true
-    sources:
-      - google-chrome
-    packages:
-      - dpkg
-      - google-chrome-stable
+  chrome: stable
 python:
   - "3.5"
-#  - "3.6"
-#  - "3.7"
-#  - "3.8"
+  - "3.6"
+  - "3.7"
+  - "3.8"
 script:
   - sh download_webdriver.sh
-  - pytest tests/
+  - pytest --headless  tests/
