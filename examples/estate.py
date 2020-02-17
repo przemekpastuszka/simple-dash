@@ -42,7 +42,7 @@ x_column_chooser = dcc.Dropdown(id='x-column-chooser', options=options_from(['ar
 y_column_chooser = dcc.Dropdown(id='y-column-chooser', options=options_from(['area', 'price', 'floor']), value='price')
 
 relation_plot = plain_scatter_plot(
-    'retlation-plot',
+    'relation-plot',
     x=estates_to_display[Input(x_column_chooser.id, 'value')],
     y=estates_to_display[Input(y_column_chooser.id, 'value')],
     customdata=estates_to_display.index

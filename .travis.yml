@@ -1,10 +1,13 @@
 language: python
+install:
+  - pip install -r requirements.dev.txt
+addons:
+  chrome: stable
 python:
   - "3.5"
   - "3.6"
   - "3.7"
   - "3.8"
-install:
-  - pip install -r requirements.dev.txt
 script:
-  - pytest
+  - sh download_webdriver.sh
+  - pytest tests/
