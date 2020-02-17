@@ -1,7 +1,7 @@
 language: python
 install:
   - pip install -r requirements.dev.txt
-  - pip install dash[testing]
+  - pip install 'dash[testing]'
 addons:
   chrome: stable
 python:
@@ -10,5 +10,4 @@ python:
   - "3.7"
   - "3.8"
 script:
-  - sh download_webdriver.sh
   - pytest tests/
