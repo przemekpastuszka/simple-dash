@@ -4,23 +4,19 @@ import dash_html_components as html
 import pandas
 from dash.dependencies import Input
 
+from examples.utils import plain_scatter_plot, options_from, colorized_map_plot, range_slider
 from simpledash.callbacks import setup_callbacks
 from simpledash.data.data_provider import data_provider
 
 estates = pandas.DataFrame(columns=[
-    'type', 'area', 'price', 'lat', 'lng', 'desc'], data=[
-    ('flat', 20, 1600, 50.07, 20.03, 'Pretty little flat'),
-    ('flat', 78, 3400, 50.08, 20.04, 'Biggest flat you can get'),
-    ('flat', 25, 1700, 50.02, 19.99, 'Reasonable choice'),
-    ('flat', 60, 2000, 50.05, 20.01, 'Big yet cheap'),
-    ('house', 98, 5500, 50.04, 19.94, 'House near the river'),
-    ('house', 90, 3500, 50.02, 19.97, 'Cozy house')
+    'type', 'area', 'price', 'lat', 'lng', 'floor', 'desc'], data=[
+    ('flat', 20, 1600, 50.07, 20.03, 0, 'Pretty little flat'),
+    ('flat', 78, 3400, 50.08, 20.04, 3, 'Biggest flat you can get'),
+    ('flat', 25, 1700, 50.02, 19.99, 10, 'Reasonable choice'),
+    ('flat', 60, 2000, 50.05, 20.01, 15, 'Big yet cheap'),
+    ('house', 98, 5500, 50.04, 19.94, 0, 'House near the river'),
+    ('house', 90, 3500, 50.02, 19.97, 0, 'Cozy house')
 ])
-
-
-def options_from(series):
-    return [dict(label=v, value=v) for v in series]
-
 
 category_filter = dcc.Dropdown(id='type_filter', options=options_from(['flat', 'house']), value="flat")
 
@@ -30,15 +26,8 @@ def estates_by_type(estate_type):
     return estates[estates['type'] == estate_type]
 
 
-area_filter = dcc.RangeSlider('areafilter',
-                              min=estates_by_type['area'].min(),
-                              max=estates_by_type['area'].max(),
-                              value=(estates_by_type['area'].min(), estates_by_type['area'].max()))
-
-price_filter = dcc.RangeSlider('pricefilter',
-                               min=estates_by_type['price'].min(),
-                               max=estates_by_type['price'].max(),
-                               value=(estates_by_type['price'].min(), estates_by_type['price'].max()))
+area_filter = range_slider('areafilter', min_max_from=estates_by_type['area'])
+price_filter = range_slider('pricefilter', min_max_from=estates_by_type['price'])
 
 
 @data_provider(estates_by_type, Input(area_filter.id, 'value'), Input(price_filter.id, 'value'))
@@ -48,40 +37,33 @@ def estates_to_display(df, area_filter_value, price_filter_value):
     return df
 
 
-color_chooser = dcc.Dropdown(id='color-chooser', options=options_from(['area', 'price']), value='area')
+color_chooser = dcc.Dropdown(id='color-chooser', options=options_from(['area', 'price', 'floor']), value='area')
+x_column_chooser = dcc.Dropdown(id='x-column-chooser', options=options_from(['area', 'price', 'floor']), value='area')
+y_column_chooser = dcc.Dropdown(id='y-column-chooser', options=options_from(['area', 'price', 'floor']), value='price')
 
-map_plot = dcc.Graph('map', figure={
-    'data': [
-        {
-            'lat': estates_to_display['lat'],
-            'lon': estates_to_display['lng'],
-            'mode': 'markers',
-            'type': 'scattermapbox',
-            'marker': {
-                'color': estates_to_display[Input(color_chooser.id, 'value')],
-                'cmin': estates_to_display[Input(color_chooser.id, 'value')].min(),
-                'cmax': estates_to_display[Input(color_chooser.id, 'value')].max(),
-                'colorscale': 'Jet',
-                'colorbar': dict(thickness=20, title=Input(color_chooser.id, 'value'))
-            },
-            'customdata': estates_to_display.index
-        }
-    ],
-    'layout': {
-        'mapbox': dict(
-            style='stamen-toner',
-            center=dict(
-                lat=50.049683,
-                lon=19.944544
-            ),
-            zoom=10
-        )
-    }
-})
+relation_plot = plain_scatter_plot(
+    'retlation-plot',
+    x=estates_to_display[Input(x_column_chooser.id, 'value')],
+    y=estates_to_display[Input(y_column_chooser.id, 'value')],
+    customdata=estates_to_display.index
+)
+
+map_plot = colorized_map_plot(
+    'map',
+    lat=estates_to_display['lat'],
+    lng=estates_to_display['lng'],
+    colors=estates_to_display[Input(color_chooser.id, 'value')],
+    customdata=estates_to_display.index,
+    center=dict(
+        lat=50.049683,
+        lon=19.944544
+    )
+)
 
 
-@data_provider(Input(map_plot.id, 'clickData'))
-def selected_point(click_data):
+@data_provider(Input('tabs', 'value'), Input(relation_plot.id, 'clickData'), Input(map_plot.id, 'clickData'))
+def selected_point(tabs_value, relation_click_data, map_click_data):
+    click_data = relation_click_data if tabs_value == "tab-1" else map_click_data
     if click_data:
         point_index = click_data['points'][0]['customdata']
         return estates.loc[point_index]
@@ -97,8 +79,17 @@ app.layout = html.Div(children=[
         html.Div(["Filter by area: ", area_filter], className='row'),
         html.Div(["Filter by price: ", price_filter], className='row'),
     ], open=True),
-    html.Div(["Colorize graph by: ", color_chooser], className='row'),
-    map_plot,
+    dcc.Tabs([
+        dcc.Tab([
+            html.Div(["x: ", x_column_chooser], className='row'),
+            html.Div(["y: ", y_column_chooser], className='row'),
+            relation_plot
+        ], label="Plot"),
+        dcc.Tab([
+            html.Div(["Colorize graph by: ", color_chooser], className='row'),
+            map_plot,
+        ], label="Map")
+    ], id='tabs'),
     html.Div(["Area: ", html.Strong(selected_point['area'], id='area'), " m2"], className='row'),
     html.Div(["Price: ", html.Strong(selected_point['price'], id='price'), " zl"], className='row'),
     html.Div(html.Iframe([], srcDoc=selected_point['desc'], id='desc', className='nine columns'),
