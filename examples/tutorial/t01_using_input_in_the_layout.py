@@ -13,7 +13,7 @@ app.layout = html.Div([
     dash_core_components.Input(id='data-input', className='row'),
 
     # with Simple Plotly Dash you can use a dash dependency object directly in the layout
-    # it will be replaced by actual `input_box.value` and updated every time it changes
+    # it will be replaced by actual `data-input.value` and updated every time it changes
     html.Div(dash.dependencies.Input('data-input', 'value'), className='row', id='output-div')
 ])
 

@@ -2,7 +2,9 @@
 
 Simple Plotly Dash is a library that simplifies building applications with [Plotly Dash](https://github.com/plotly/dash) by allowing you to attach data directly to the layout and creating all the necessary callback functions under the hood.
 
-## Simplest example - using Input object in the layout
+
+## Tutorial
+### Simplest example - using Input object in the layout
 Let's create an app with single `Input` component, that renders back whatever the user has typed in.
 
 ```python
@@ -12,7 +14,7 @@ app.layout = html.Div([
     dash_core_components.Input(id='data-input', className='row'),
     
     # with Simple Plotly Dash you can use a dash dependency object directly in the layout
-    # it will be replaced by actual `input_box.value` and updated every time it changes
+    # it will be replaced by actual `data-input.value` and updated every time it changes
     html.Div(dash.dependencies.Input('data-input', 'value'), className='row', id='output-div')
 ])
 
@@ -23,7 +25,7 @@ As you can see, no callbacks were explicitly defined and the code is clean and s
 
 What happened? The `setup_callbacks` method has scanned the app's layout, found all occurrences of `dash.dependencies.Input` and created a callback functions for them.
 
-## More complex example - data functions with `data_provider` decorator
+### More complex example - data functions with `data_provider` decorator
 We would like to have two Inputs (named A and B) and let user decide which one is going to be used
 for rendering the output value. This choice will be done via dropdown.
 
@@ -70,4 +72,51 @@ we can call the method directly on `output_value` (and this will create new `dat
 Please note that the set of operations you are able to do on `data_provider` instance are limited to:
 * accessing the property (`output_value.xyz`)
 * accessing the item by index (`output_value['xyz']`)
-* calling the method (`output_value.xyz("param")`) 
+* calling the method (`output_value.xyz("param")`)
+
+### Nesting `data_provider`s
+Let's say you'd like to replicate the `output_value.upper()` behavior from previous example, but without syntax sugar, i.e. by defining new `data_provider` directly.
+
+The first option is to create a `data_provider` that takes the same inputs as `output_value` and passes values of those inputs to `output_value`. Here's how it looks like:
+```python
+@data_provider(Input('data-input-a', 'value'), Input('data-input-b', 'value'), Input('input-chooser', 'value'))
+def uppercase_output_value_1(input_a_value, input_b_value, input_chooser_value):
+    v = output_value(input_a_value, input_b_value, input_chooser_value)
+    return v.upper()
+```
+
+The second option has much less boilerplate, because the whole `data_provider` is specified as an input:
+```python
+@data_provider(output_value)
+def uppercase_output_value_2(v):
+    return v.upper()
+```
+
+### What's next?
+To see more advanced examples go to [examples](examples) section of the repo.
+
+## FAQ
+### What is the performance of Simple Plotly Dash vs plain dash?
+Performance hasn't been priority so far, so it's reasonable to expect Simple Plotly Dash to be slower. That being said - there's a room for improvement (for example - caching `data_provider`'s output) and we expect to tackle this issue in later releases.
+
+### What are the limitations when compared to plain dash?
+Validators like to fail on `data_provider`s, so in many cases you need to just stop using them.
+
+To give you an example - this will not work: 
+```python
+dcc.Graph(figure={'data': [
+            graph_objects.Scattermapbox(lat=some_data_provider, ...)
+]})
+```
+
+but this will:
+```python
+dcc.Graph(figure={'data': [
+            dict(lat=some_data_provider, ...)
+]})
+```
+
+### Can I test it?
+Absolutely. Any testing methods that worked for plain dash apps will work with this approach too.
+
+Testing data providers is also pretty easy - they behave just like a methods, so you can call them in your test code.
