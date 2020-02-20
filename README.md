@@ -1,6 +1,6 @@
-# Simple Plotly Dash [![Build Status](https://travis-ci.com/rtshadow/Simple-Plotly-Dash.svg?branch=master)](https://travis-ci.com/rtshadow/Simple-Plotly-Dash)
+# Simple Dash [![Build Status](https://travis-ci.com/rtshadow/Simple-Plotly-Dash.svg?branch=master)](https://travis-ci.com/rtshadow/Simple-Plotly-Dash)
 
-Simple Plotly Dash is a library that simplifies building applications with [Plotly Dash](https://github.com/plotly/dash) by allowing you to attach data directly to the layout and creating all the necessary callback functions under the hood.
+Simple Dash is a library that simplifies building applications with [Plotly Dash](https://github.com/plotly/dash) by allowing you to attach data directly to the layout and creating all the necessary callback functions under the hood.
 
 
 ## Tutorial
@@ -13,7 +13,7 @@ from simpledash.callbacks import setup_callbacks
 app.layout = html.Div([
     dash_core_components.Input(id='data-input', className='row'),
     
-    # with Simple Plotly Dash you can use a dash dependency object directly in the layout
+    # with Simple Dash you can use a dash dependency object directly in the layout
     # it will be replaced by actual `data-input.value` and updated every time it changes
     html.Div(dash.dependencies.Input('data-input', 'value'), className='row', id='output-div')
 ])
@@ -66,7 +66,7 @@ setup_callbacks(app)
 This time we have used `data_provider` decorator to declare the function that is able to provide data based on inputs. Note, that this is a plain python function, so you should be able to do any operation on inputs, regardless of the complexity.
 
 Interesting thing we see in the example is `output_value.upper()`. This is just a syntax sugar 
-that Simple Plotly Dash gives you - instead of writing another `data_provider` to do the uppercasing, 
+that Simple Dash gives you - instead of writing another `data_provider` to do the uppercasing, 
 we can call the method directly on `output_value` (and this will create new `data_provider` under the hood for you).
 
 Please note that the set of operations you are able to do on `data_provider` instance are limited to:
@@ -96,8 +96,8 @@ def uppercase_output_value_2(v):
 To see more advanced examples go to [examples](examples) section of the repo.
 
 ## FAQ
-### What is the performance of Simple Plotly Dash vs plain dash?
-Performance hasn't been priority so far, so it's reasonable to expect Simple Plotly Dash to be slower. That being said - there's a room for improvement (for example - caching `data_provider`'s output) and we expect to tackle this issue in later releases.
+### What is the performance of Simple Dash vs plain dash?
+Performance hasn't been priority so far, so it's reasonable to expect Simple Dash to be slower. That being said - there's a room for improvement (for example - caching `data_provider`'s output) and we expect to tackle this issue in later releases.
 
 ### What are the limitations when compared to plain dash?
 Validators like to fail on `data_provider`s, so in many cases you need to just stop using them.
