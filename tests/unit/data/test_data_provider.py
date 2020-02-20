@@ -1,7 +1,7 @@
 import pytest
 from dash.dependencies import Input
 
-from simpledash.data.data_provider import DataProvider, DataProviderOperationException, StaticValueProvider, \
+from simpledash.data.data_providers import DataProvider, DataProviderOperationException, StaticValueProvider, \
     DashInput
 
 dummy_data_provider = DataProvider()

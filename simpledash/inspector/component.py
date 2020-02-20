@@ -4,7 +4,7 @@ from typing import Dict, List
 from dash.dependencies import Input
 from dash.development.base_component import Component
 
-from simpledash.data.data_provider import DataProvider
+from simpledash.data.data_providers import DataProvider
 from simpledash.inspector.accessors import Accessor, KeyAccessor, TupleAccessor, DummyAccessor, NestedAccessor
 
 

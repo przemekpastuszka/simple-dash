@@ -6,7 +6,7 @@ from dash.dependencies import Input
 
 from examples.utils import plain_scatter_plot, options_from, colorized_map_plot, range_slider
 from simpledash.callbacks import setup_callbacks
-from simpledash.data.data_provider import data_provider
+from simpledash.data.data_providers import data_provider
 
 estates = pandas.DataFrame(columns=[
     'type', 'area', 'price', 'lat', 'lng', 'floor', 'desc'], data=[

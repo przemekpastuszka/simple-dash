@@ -5,7 +5,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input, Output, State
 
 from simpledash.callbacks import _replace_data_providers_with_nones, _setup_callback
-from simpledash.data.data_provider import DataProvider, DashInput
+from simpledash.data.data_providers import DataProvider, DashInput
 from simpledash.inspector.accessors import NestedAccessor, Accessor, KeyAccessor
 from simpledash.inspector.component import DataProviderWithAccessor
 
