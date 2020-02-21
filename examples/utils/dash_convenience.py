@@ -1,15 +1,8 @@
-import random
-
 import dash_core_components as dcc
 
 
 def options_from(series):
     return [dict(label=v, value=v) for v in series]
-
-
-def shuffle(ls):
-    random.shuffle(ls)
-    return ls
 
 
 def plain_scatter_plot(id, x, y, customdata):

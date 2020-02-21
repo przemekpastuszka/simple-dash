@@ -4,7 +4,8 @@ import dash_html_components as html
 import pandas
 from dash.dependencies import Input
 
-from examples.utils import plain_scatter_plot, options_from, colorized_map_plot, range_slider
+from examples.utils.dash_convenience import options_from, plain_scatter_plot, colorized_map_plot, range_slider
+from examples.utils.data_generators import generate_more_data
 from simpledash.callbacks import setup_callbacks
 from simpledash.data.data_providers import data_provider
 
@@ -17,6 +18,7 @@ estates = pandas.DataFrame(columns=[
     ('house', 98, 5500, 50.04, 19.94, 0, 'House near the river'),
     ('house', 90, 3500, 50.02, 19.97, 0, 'Cozy house')
 ])
+estates = generate_more_data(estates)
 
 category_filter = dcc.Dropdown(id='type_filter', options=options_from(['flat', 'house']), value="flat")
 

@@ -12,3 +12,9 @@ python:
 script:
   - sh download_webdriver.sh
   - pytest --headless  tests/
+deploy:
+  provider: pypi
+  user: "__token__"
+  password: "$PYPI_TOKEN"
+  on:
+    tags: true

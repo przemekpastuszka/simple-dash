@@ -10,7 +10,7 @@ import dash_core_components as dcc
 from dash.dependencies import Input
 import dash_html_components as html
 
-from examples.utils import options_from
+from examples.utils.dash_convenience import options_from
 from simpledash.callbacks import setup_callbacks
 from simpledash.data.data_providers import data_provider
 

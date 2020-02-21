@@ -10,7 +10,7 @@ def read_lines(file_path):
 
 
 setup(
-    name="simple-plotly-dash",
+    name="simpledash",
     version=simpledash.__version__,
     author="Przemyslaw Pastuszka",
     author_email="pastuszka.przemyslaw@gmail.com",
