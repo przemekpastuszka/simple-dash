@@ -15,6 +15,7 @@ setup(
     author="Przemyslaw Pastuszka",
     author_email="pastuszka.przemyslaw@gmail.com",
     license="MIT",
+    url="https://github.com/rtshadow/simple-dash",
     description=(
         "Library to simplify building Plotly Dash applications"
     ),

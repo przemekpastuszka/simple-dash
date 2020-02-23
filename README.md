@@ -1,7 +1,11 @@
-# Simple Dash [![Build Status](https://travis-ci.com/rtshadow/Simple-Plotly-Dash.svg?branch=master)](https://travis-ci.com/rtshadow/Simple-Plotly-Dash)
+# Simple Dash [![Build Status](https://travis-ci.com/rtshadow/simple-dash.svg?branch=master)](https://travis-ci.com/rtshadow/simple-dash)
 
 Simple Dash is a library that simplifies building applications with [Plotly Dash](https://github.com/plotly/dash) by allowing you to attach data directly to the layout and creating all the necessary callback functions under the hood.
 
+## Installation
+```bash
+pip install simpledash==0.1.0
+```
 
 ## Tutorial
 ### Simplest example - using Input object in the layout
