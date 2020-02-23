@@ -4,7 +4,7 @@ Simple Dash is a library that simplifies building applications with [Plotly Dash
 
 ## Installation
 ```bash
-pip install simpledash==0.1.0
+pip install simpledash
 ```
 
 ## Tutorial
