@@ -16,6 +16,7 @@ script:
 jobs:
   include:
     - stage: deploy
+      script: echo "Starting Pypi build"
       deploy:
         provider: pypi
         username: "__token__"

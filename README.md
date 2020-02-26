@@ -100,6 +100,9 @@ def uppercase_output_value_2(v):
 To see more advanced examples go to [examples](examples) section of the repo.
 
 ## FAQ
+### Is there a usage for `data_provider` with no inputs?
+Use `data_provider` with no inputs when you've got a static, but time-consuming-to-calculate data. `data_provider` will ensure laziness - i.e. that the function is called only if the component using it is being displayed to the user.
+
 ### What is the performance of Simple Dash vs plain dash?
 Performance hasn't been priority so far, so it's reasonable to expect Simple Dash to be slower. That being said - there's a room for improvement (for example - caching `data_provider`'s output) and we expect to tackle this issue in later releases.
 
