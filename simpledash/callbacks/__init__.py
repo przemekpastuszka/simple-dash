@@ -10,6 +10,12 @@ from simpledash.inspector.layout import find_all_components
 
 
 def setup_callbacks(app: Dash, layout=None):
+    """
+    Scans the layout to find instances of data_provider and sets callbacks for them
+
+    :param app: the app to use for callbacks
+    :param layout: layout which will be scanned. If not given, app.layout is going to be used
+    """
     layout = layout or app.layout
     for component in find_all_components(layout):
         for component_property, data_providers in find_data_providers(component).items():

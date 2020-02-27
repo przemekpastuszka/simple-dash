@@ -4,3 +4,4 @@
 build
 chromedriver
 dist
+*.egg-info
