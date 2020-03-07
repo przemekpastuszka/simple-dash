@@ -94,8 +94,9 @@ app.layout = html.Div(children=[
         html.Summary("Filters"),
         html.Div(["Category: ", availability_filter], className='row'),
         html.Div(["Filter by area: ", area_filter], className='row'),
-        html.Div(["Filter by price: ", price_filter], className='row'),
+        html.Div(["Filter by rent price: ", price_filter], className='row'),
     ], open=True),
+    html.Br(),
     dcc.Tabs([
         dcc.Tab([
             html.Div(["x: ", x_column_chooser], className='row'),
@@ -108,10 +109,10 @@ app.layout = html.Div(children=[
         ], label="Map")
     ], id='tabs'),
     html.Div(["Area: ", html.Strong(selected_point['area'], id='area'), " m2"], className='row'),
-    html.Div(["rent_price price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row')
+    html.Div(["Rent price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row')
 ])
 
 setup_callbacks(app)
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)

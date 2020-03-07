@@ -1,5 +1,7 @@
 import dash_core_components as dcc
 
+from simpledash.data.data_providers import data_provider
+
 
 def options_from(series):
     return [dict(label=v, value=v) for v in series]
@@ -21,7 +23,8 @@ def range_slider(id, min_max_from):
         id,
         min=min_max_from.min(),
         max=min_max_from.max(),
-        value=(min_max_from.min(), min_max_from.max())
+        value=(min_max_from.min(), min_max_from.max()),
+        tooltip={'always_visible': True, 'placement': 'bottomRight'}
     )
 
 

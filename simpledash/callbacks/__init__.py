@@ -4,7 +4,7 @@ from dash import Dash
 from dash.dependencies import Output, State, Input
 from dash.development.base_component import Component
 
-from simpledash.inspector.accessors import NestedAccessor, PropertyAccessor
+from simpledash.inspector.accessors import NestedAccessor, PropertyAccessor, DummyAccessor
 from simpledash.inspector.component import find_data_providers, DataProviderWithAccessor
 from simpledash.inspector.layout import find_all_components
 
@@ -26,8 +26,12 @@ def setup_callbacks(app: Dash, layout=None):
 def _replace_data_providers_with_nones(component: Component, component_property: str,
                                        data_providers: List[DataProviderWithAccessor]):
     for data_provider in data_providers:
-        accessor = NestedAccessor(PropertyAccessor(component_property), data_provider.accessor)
-        accessor.set(component, None)
+        if isinstance(data_provider.accessor, DummyAccessor):
+            delattr(component, component_property)
+        else:
+            accessor = NestedAccessor(PropertyAccessor(component_property), data_provider.accessor)
+            accessor.set(component, None)
+
     return component
 
 

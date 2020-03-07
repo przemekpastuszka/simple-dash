@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output, State
 
 from simpledash.callbacks import _replace_data_providers_with_nones, _setup_callback
 from simpledash.data.data_providers import DataProvider, DashInput
-from simpledash.inspector.accessors import NestedAccessor, Accessor, KeyAccessor
+from simpledash.inspector.accessors import NestedAccessor, Accessor, KeyAccessor, DummyAccessor
 from simpledash.inspector.component import DataProviderWithAccessor
 
 test_component = dcc.Graph(
@@ -22,6 +22,13 @@ def test_replaces_data_providers_with_none():
 
     assert result.figure['series'][0]['x'] is None
     assert result.figure['series'][0]['y'] is None
+
+
+def test_removes_property_if_data_provider_was_used_at_top_level():
+    result = _replace_data_providers_with_nones(
+        test_component, 'figure', [DataProviderWithAccessor(None, DummyAccessor())])
+
+    assert hasattr(result, 'figure') is False
 
 
 def test_sets_up_callbacks_properly():
@@ -44,7 +51,7 @@ def test_sets_up_callbacks_properly():
 def _x_provider():
     return _data_provider_with_accessor(
         [KeyAccessor('series'), KeyAccessor(0), KeyAccessor("x")],
-        DashInput(Input("x", "z"), )
+        DashInput(Input("x", "z"))
     )
 
 
