@@ -101,14 +101,17 @@ app.layout = html.Div(children=[
     html.Div([
         html.Details([
             html.Summary("Filters"),
-            html.Div(["Category: ", availability_filter], className='row'),
+            html.Div(["Availability: ", availability_filter], className='row'),
             html.Div(["Filter by area: ", area_filter], className='row'),
             html.Div(["Filter by rent price: ", price_filter], className='row'),
         ], open=True, className='row'),
+        html.Br(),
         html.Details([
             html.Summary("Selected point"),
             html.Div(["Area: ", html.Strong(selected_point['area'], id='area'), " m2"], className='row'),
-            html.Div(["Rent price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row')
+            html.Div(["Rent price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row'),
+            html.Div(["Floor: ", html.Strong(selected_point['floor'], id='floor')], className='row'),
+            html.Div(["# floors in the building: ", html.Strong(selected_point['total_no_of_floors'], id='no_floors')], className='row')
         ], open=True, className='row')
     ], className='three columns'),
     html.Div([
