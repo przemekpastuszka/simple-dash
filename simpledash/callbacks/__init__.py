@@ -17,10 +17,23 @@ def setup_callbacks(app: Dash, layout=None):
     :param layout: layout which will be scanned. If not given, app.layout is going to be used
     """
     layout = layout or app.layout
+    component_with_data_providers = _find_all_components_and_their_data_providers(layout)
+
+    for component, component_property, data_providers in component_with_data_providers:
+        _replace_data_providers_with_nones(component, component_property, data_providers)
+
+    for component, component_property, data_providers in component_with_data_providers:
+        _setup_callback(app, component, component_property, data_providers)
+
+
+def _find_all_components_and_their_data_providers(layout):
+    component_with_data_providers = []
     for component in find_all_components(layout):
         for component_property, data_providers in find_data_providers(component).items():
-            _replace_data_providers_with_nones(component, component_property, data_providers)
-            _setup_callback(app, component, component_property, data_providers)
+            component_with_data_providers.append((
+                component, component_property, data_providers
+            ))
+    return component_with_data_providers
 
 
 def _replace_data_providers_with_nones(component: Component, component_property: str,

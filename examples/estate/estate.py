@@ -24,7 +24,10 @@ data_file_path = root_dir = Path(__file__).parent / "flats.csv"
 flats = pandas.read_csv(data_file_path)
 
 # let user decide whether they want to see all data or only data about (still) available flats
-availability_filter = dcc.Dropdown(id='type_filter', options=options_from(['All', 'Only available']), value="All")
+# or historical data (about flats that have already been rented)
+availability_filter = dcc.Dropdown(id='type_filter',
+                                   options=options_from(['All', 'Only available', 'Already rented']),
+                                   value="All")
 
 
 # this data provider uses the availability_filter to present right subset of data
@@ -32,7 +35,9 @@ availability_filter = dcc.Dropdown(id='type_filter', options=options_from(['All'
 def flats_by_availability(required_availability):
     if required_availability == 'All':
         return flats
-    return flats[flats['is_available'] == True]
+    if required_availability == 'Only available':
+        return flats[flats['is_available'] == True]
+    return flats[flats['is_available'] == False]
 
 
 # here are the range sliders we'll use to filter on area and rent_price
@@ -52,8 +57,10 @@ def flats_to_display(df, area_filter_value, price_filter_value):
 
 
 # the task was to plot price against area, but we will actually give user a choice of both X and Y columns
-x_column_chooser = dcc.Dropdown(id='x-column-chooser', options=options_from(['area', 'rent_price', 'floor']), value='area')
-y_column_chooser = dcc.Dropdown(id='y-column-chooser', options=options_from(['area', 'rent_price', 'floor']), value='rent_price')
+x_column_chooser = dcc.Dropdown(id='x-column-chooser', options=options_from(['area', 'rent_price', 'floor']),
+                                value='area')
+y_column_chooser = dcc.Dropdown(id='y-column-chooser', options=options_from(['area', 'rent_price', 'floor']),
+                                value='rent_price')
 relation_plot = plain_scatter_plot(
     'relation-plot',
     x=flats_to_display[Input(x_column_chooser.id, 'value')],
@@ -62,7 +69,8 @@ relation_plot = plain_scatter_plot(
 )
 
 # the task was to colorize the markers on the map by price, but we'll give user other options to choose from too
-color_chooser = dcc.Dropdown(id='color-chooser', options=options_from(['area', 'rent_price', 'floor']), value='rent_price')
+color_chooser = dcc.Dropdown(id='color-chooser', options=options_from(['area', 'rent_price', 'floor']),
+                             value='rent_price')
 map_plot = colorized_map_plot(
     'map',
     lat=flats_to_display['latitude'],
@@ -90,27 +98,33 @@ def selected_point(tabs_value, relation_click_data, map_click_data):
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 app.layout = html.Div(children=[
-    html.Details([
-        html.Summary("Filters"),
-        html.Div(["Category: ", availability_filter], className='row'),
-        html.Div(["Filter by area: ", area_filter], className='row'),
-        html.Div(["Filter by rent price: ", price_filter], className='row'),
-    ], open=True),
-    html.Br(),
-    dcc.Tabs([
-        dcc.Tab([
-            html.Div(["x: ", x_column_chooser], className='row'),
-            html.Div(["y: ", y_column_chooser], className='row'),
-            relation_plot
-        ], label="Plot"),
-        dcc.Tab([
-            html.Div(["Colorize graph by: ", color_chooser], className='row'),
-            map_plot,
-        ], label="Map")
-    ], id='tabs'),
-    html.Div(["Area: ", html.Strong(selected_point['area'], id='area'), " m2"], className='row'),
-    html.Div(["Rent price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row')
-])
+    html.Div([
+        html.Details([
+            html.Summary("Filters"),
+            html.Div(["Category: ", availability_filter], className='row'),
+            html.Div(["Filter by area: ", area_filter], className='row'),
+            html.Div(["Filter by rent price: ", price_filter], className='row'),
+        ], open=True, className='row'),
+        html.Details([
+            html.Summary("Selected point"),
+            html.Div(["Area: ", html.Strong(selected_point['area'], id='area'), " m2"], className='row'),
+            html.Div(["Rent price: ", html.Strong(selected_point['rent_price'], id='rent_price'), " zl"], className='row')
+        ], open=True, className='row')
+    ], className='three columns'),
+    html.Div([
+        dcc.Tabs([
+            dcc.Tab([
+                html.Div(["x: ", x_column_chooser], className='row'),
+                html.Div(["y: ", y_column_chooser], className='row'),
+                relation_plot
+            ], label="Plot"),
+            dcc.Tab([
+                html.Div(["Colorize graph by: ", color_chooser], className='row'),
+                map_plot,
+            ], label="Map")
+        ], id='tabs')
+    ], className='nine columns')
+], className='row')
 
 setup_callbacks(app)
 
